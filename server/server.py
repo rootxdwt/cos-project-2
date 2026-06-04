@@ -22,14 +22,15 @@ class Server:
         self.cport = cport
         self.ntrain = ntrain
         self.ntest = ntest
-        success = self.connecter()
+        success = self.connecter()  // AI 연동 모듈 초기 설정을 담당하는 함수로 TCP 소켓을 생성하여 AI 모듈과 연결하고 사용자가 지정한 알고리즘, 인덱스 정보 등을 JSON 형태로 구성하여 HTTP POST 요청을 통해 AI 모듈에 전송한다.
+                                    // AI 모듈로부터 성공 응답을 받을 시 True르 반환한다.
 
         if success:
             self.port = port
             self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.socket.bind(("0.0.0.0", port))
             self.socket.listen(10)
-            self.listener()
+            self.listener()  // 외부 디바이스에서의 접속을 수락 및 대기시킨다. 소켓을 열어 클라이언트 연결 요청을 대기하며 새로운 에지 디바이스가 접속하면 멀티스레드를 생성해 해당 클라이언트의 요청 처리를 독립된 handler 함수로 넘긴다.
 
     def connecter(self):
         success = True
@@ -70,7 +71,7 @@ class Server:
             client, info = self.socket.accept()
             logging.info("[*] Server accept the connection from {}:{}".format(info[0], info[1]))
 
-            client_handle = threading.Thread(target=self.handler, args=(client,))
+            client_handle = threading.Thread(target=self.handler, args=(client,))  // 에지 디바이스와 3단계로 통신하는 함수로 1단계: OPCODE DATA와 5바이트 데이터를 수신해 AI 도률로 학습 데이터 전송 후 개수를 채우면 대기 신호를 보내 학습을 요청, 2단계: 학습이 끝나면 완료 신호를 보내 테스트 데이터를 수신, 3단계: 테스트가 모두 끝나면 통신을 종료하고 AI 모듈에서 예측 정확도와 결과를 받아 출력  
             client_handle.start()
 
     def send_instance(self, vlst, is_training):

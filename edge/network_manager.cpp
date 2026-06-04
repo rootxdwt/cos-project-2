@@ -74,38 +74,38 @@ int NetworkManager::init()
 }
 
 // TODO: You should revise the following code
-int NetworkManager::sendData(uint8_t *data, int dlen)
+int NetworkManager::sendData(uint8_t *data, int dlen)  // ProcessManager에서 처리된 데이터를 서버로 보내는 함수
 {
-  int sock, tbs, sent, offset, num, jlen;
-  unsigned char opcode;
-  uint8_t n[4];
-  uint8_t *p;
+  int sock, tbs, sent, offset, num, jlen;  // 사용할 소켓 번호, 보낼 바이트 수, 실제 전송된 바이트 수, 전송 위치 등을 저장할 변수들
+  unsigned char opcode;  // 서버로 보낼 opcode 값을 저장할 변수
+  uint8_t n[4];  // 4바이트 크기의 임시 배열
+  uint8_t *p;  // uint8_t 포인터 변수
 
-  sock = this->sock;
+  sock = this->sock;  // 객체에 저장된 소켓 번호를 지역 변수 sock에 복사
   // Example) data (processed by ProcessManager) consists of:
   // Example) minimum temperature (1 byte) || minimum humidity (1 byte) || minimum power (2 bytes) || month (1 byte)
   // Example) edge -> server: opcode (OPCODE_DATA, 1 byte)
-  opcode = OPCODE_DATA;
-  tbs = 1; offset = 0;
-  while (offset < tbs)
+  opcode = OPCODE_DATA;  // 전송할 opcode를 데이터 전송을 의미하는 OPCODE_DATA로 설정
+  tbs = 1; offset = 0;  // 보낼 바이트 수를 1바이트로 설정하고, 전송 시작 위치 offset을 0으로 초기화
+  while (offset < tbs)  // offset이 tbs보다 작으면 아직 전송할 데이터가 남아 있다는 뜻이므로 반복
   {
-    sent = write(sock, &opcode + offset, tbs - offset);
-    if (sent > 0)
-      offset += sent;
+    sent = write(sock, &opcode + offset, tbs - offset);  // opcode의 offset 위치부터 남은 바이트 수만큼 소켓으로 전송
+    if (sent > 0)  // 실제로 전송된 바이트 수가 0보다 크면
+      offset += sent;  // 전송된 만큼 offset을 증가시켜 다음 전송 위치를 갱신
   }
-  assert(offset == tbs);
+  assert(offset == tbs);  // 실제 전송한 총 바이트 수가 보내야 할 바이트 수와 같은지 확인
 
   // Example) edge -> server: temperature (1 byte) || humidity (1 byte) || power (2 bytes) || month (1 byte)
-  tbs = 5; offset = 0;
-  while (offset < tbs)
+  tbs = 5; offset = 0;  // 실제 데이터 크기를 5바이트로 설정하고, 전송 시작 위치 offset을 0으로 초기화
+  while (offset < tbs)  // offset이 tbs보다 작으면 아직 전송할 데이터가 남아 있다는 뜻이므로 반복
   {
-    sent = write(sock, data + offset, tbs - offset);
-    if (sent > 0)
-      offset += sent;
+    sent = write(sock, data + offset, tbs - offset);  // data의 offset 위치부터 남은 바이트 수만큼 소켓으로 전송
+    if (sent > 0)  // 실제로 전송된 바이트 수가 0보다 크면
+      offset += sent;  // 전송된 만큼 offset을 증가시켜 다음 전송 위치를 갱신
   }
-  assert(offset == tbs);
+  assert(offset == tbs);  // 실제 전송한 총 바이트 수가 보내야 할 바이트 수와 같은지 확인
 
-  return 0;
+  return 0;  // 함수가 정상적으로 끝났음을 의미하는 0을 반환
 }
 
 // TODO: Please revise or implement this function as you want. You can also remove this function if it is not needed

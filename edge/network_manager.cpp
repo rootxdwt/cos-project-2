@@ -109,19 +109,19 @@ int NetworkManager::sendData(uint8_t *data, int dlen)
 }
 
 // TODO: Please revise or implement this function as you want. You can also remove this function if it is not needed
-uint8_t NetworkManager::receiveCommand() 
+uint8_t NetworkManager::receiveCommand()   // 서버로부터 명령 opcode를 받을 때까지 기다리고, 받은 opcode를 반환하는 함수
 {
-  int sock;
-  uint8_t opcode;
-  uint8_t *p;
+  int sock;  // 현재 통신에 사용할 소켓 번호를 저장할 변수
+  uint8_t opcode;  // 서버로부터 받을 명령 코드를 저장할 변수
+  uint8_t *p;  // uint8_t 포인터 변수
 
-  sock = this->sock;
-  opcode = OPCODE_WAIT;
+  sock = this->sock;  // 객체에 저장되어 있는 소켓 번호를 지역 변수 sock에 복
+  opcode = OPCODE_WAIT;  // 처음 상태를 대기 상태인 OPCODE_WAIT으로 설정
 
-  while (opcode == OPCODE_WAIT)
-    read(sock, &opcode, 1);
+  while (opcode == OPCODE_WAIT)  // opcode가 OPCODE_WAIT인 동안 서버로부터 새로운 opcode를 계속 읽음
+    read(sock, &opcode, 1);  // 소켓에서 1바이트를 읽어 opcode 변수에 저장
 
-  assert(opcode == OPCODE_DONE || opcode == OPCODE_QUIT) ;
+  assert(opcode == OPCODE_DONE || opcode == OPCODE_QUIT) ;  // 받은 opcode가 OPCODE_DONE 또는 OPCODE_QUIT인지 확인
 
-  return opcode;
+  return opcode;  // 최종적으로 받은 opcode 값을 반환
 }

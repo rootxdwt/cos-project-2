@@ -8,4 +8,6 @@
 #define SUCCESS 1
 #define FAILURE -1
 
+#define FEATURE_COMBINATION 1
+
 #endif /* __SETTING_H__ */

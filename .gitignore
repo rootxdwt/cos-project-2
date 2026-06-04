@@ -1,7 +1,7 @@
 **/__pycache__/**
 .DS_Store
 *.o
-*.h
 *.a
-edge
-test_client
+edge/edge
+tests/test_client
+module_test/test_process_data
